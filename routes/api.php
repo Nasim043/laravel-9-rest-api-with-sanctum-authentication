@@ -23,6 +23,8 @@ Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('posts', PostController::class);
     Route::post('/auth/logout', [AuthController::class, 'logOutUser']);
+    Route::get('/auth/loggeduser', [AuthController::class, 'logged_User']);
+    Route::post('/auth/changepassword', [AuthController::class, 'change_password']);
 });
 
 // Route::apiResource('posts', PostController::class)->middleware('auth:sanctum');

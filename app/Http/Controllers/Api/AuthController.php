@@ -13,7 +13,7 @@ class AuthController extends Controller {
     /**
      * Create User
      * @param Request $request
-     * @return User
+     * @return access_token
      *
      */
     public function createUser(Request $request) {
@@ -55,6 +55,13 @@ class AuthController extends Controller {
         }
     }
 
+    /**
+     * Create User
+     * @param Request $request
+     * @return access_token
+     *
+     */
+
     public function loginUser(Request $request) {
         try {
             // Validate user
@@ -74,7 +81,7 @@ class AuthController extends Controller {
 
             if (!Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
-                    'status'  => false,
+                    'status'  => 'NOTOK',
                     'message' => 'Email & Password does not match with our record.',
                 ], 401);
             }
@@ -98,10 +105,48 @@ class AuthController extends Controller {
 
     public function logOutUser() {
         auth()->user()->tokens()->delete();
-        
+
         return response()->json([
             'status'  => 'Success',
             'message' => 'Logout Successfully',
+        ], 200);
+    }
+
+    /**
+     * Logged User Data
+     * @param
+     * @return user
+     *
+     */
+    public function logged_User() {
+        $loggedUser = auth()->user();
+
+        return response()->json([
+            'status'  => 'Success',
+            'message' => 'Logged User data',
+            'user'    => $loggedUser,
+        ], 200);
+    }
+
+    /**
+     * Change Password
+     * @param Request $request
+     * @return success message
+     *
+     */
+    public function change_password(Request $request) {
+
+        $request->validate([
+            'password' => 'required|confirmed',
+        ]);
+
+        $loggedUser = auth()->user();
+        $loggedUser->password = Hash::make($request->password);
+        $loggedUser->save();
+
+        return response()->json([
+            'status'  => 'Success',
+            'message' => 'Password Changed Successfully',
         ], 200);
     }
 }
